@@ -19,31 +19,7 @@ function HighlightMatch({ text, query }) {
   );
 }
 
-/**
- * TreeNode — recursive component.
- *
- * Renders one row (file or folder). If it's a folder and it's expanded,
- * it maps over its children and renders a TreeNode for each — which may
- * themselves render TreeNodes, creating the recursive tree.
- *
- * This approach handles any depth: 2 levels or 20, the pattern is the same.
- * There is no iterative stack or flattening; the component tree mirrors the
- * data tree exactly.
- *
- * Props:
- *   node          — the data node (from data.json)
- *   depth         — nesting level (drives indent)
- *   path          — array of ancestor names + own name
- *   isExpanded    — bool, controlled by parent
- *   isSelected    — bool
- *   isFocused     — bool (keyboard focus)
- *   searchQuery   — current search string
- *   onToggle      — (key) => void
- *   onSelect      — (node, path) => void
- *   onFocusItem   — (index) => void
- *   flatIndexRef  — mutable ref tracking current flat index during render
- *   expandedKeys  — Set of expanded keys (passed down so children can derive their own)
- */
+
 export default function TreeNode({
   node,
   depth,
