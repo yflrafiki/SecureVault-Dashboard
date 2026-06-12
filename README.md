@@ -1,109 +1,164 @@
-# SecureVault-Dashboard
-This challenge is designed to test your ability to bridge Computer Science fundamentals with Modern Frontend Engineering.
+# SecureVault File Explorer
 
-## 1. Business Scenario & Context
-**Client:** SecureVault Inc.  
-**Industry:** Enterprise Cloud Security  
+A high-performance, keyboard-accessible file explorer for SecureVault Inc. — built as a submission for the Junior Frontend Engineering challenge.
 
-**The Problem:** SecureVault offers high-security cloud storage for law firms and banks. Their backend engineers have built a robust API that returns folder structures efficiently. However, their current frontend is a simple list that is hard to navigate. Clients are complaining that they can't manage nested files easily.
-
-**Your Role:** You are the incoming Junior Frontend Engineer. Your task is to design and build a modern, high-performance "File Explorer" UI that impresses the CTO and the Design Lead.
+**Live demo:** `https://your-deployment-url.vercel.app`  
+**Design file: https://scuba-floor-04356486.figma.site/ 
 
 ---
 
-## 2. The Assignment Stages
-This is a **hybrid design/engineering challenge**. You are expected to demonstrate competence in both visual design logic and algorithmic frontend implementation.
+## Overview
 
-### Phase 1: The Design System
-**Before writing code, you must design the interface.**
-
-* **Deliverable:** A link to a design file (Figma, Penpot, or Sketch) or a PDF export of your design frames.
-* **Requirement:** Your design file must include a dedicated **"Design System" page** that defines:
-    * **Typography Scale**
-    * **Color Palette** 
-    * **Spacing Grid**
-    * **Component States**
-* **Brand Guidelines:** SecureVault wants a "Dark Mode" aesthetic that feels "cyber-secure, precise, and fast."
-
-### Phase 2: The Implementation 
-**Build the application using the design system you created in Phase 1.**
-
-* **Constraint:** You **cannot** use component libraries like Bootstrap, Material UI, Chakra UI, or Ant Design. You must build your components from scratch to prove you understand CSS layout and component abstraction.
-* **Note:** CSS frameworks like Tailwind are allowed *only* if you use them to build your own reusable component architecture.
+SecureVault's clients (law firms and banks) manage deeply nested folder structures with thousands of sensitive files. This application replaces a flat list with an interactive tree explorer featuring real-time search, keyboard navigation, file inspection, and a breadcrumb path trail.
 
 ---
 
-## 3. User Stories & Acceptance Criteria
+## Setup
 
-### Core Features (Required)
+**Prerequisites:** Node.js 18+ and npm.
 
-#### Story 1: The Recursive Tree
-> "As a lawyer with 10 years of case files, I need to navigate deeply nested folders without reloading the page."
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/securevault-dashboard.git
+cd securevault-dashboard
 
-* **AC 1:** The UI renders the folder structure from the provided JSON.
-* **AC 2:** The component structure must be **recursive**. It should handle 2 levels of depth or 20 levels without breaking the UI.
-* **AC 3:** Folders must expand/collapse on click.
+# 2. Install dependencies
+npm install
 
-#### Story 2: File Details & Inspection
-> "As a user, I need to see file metadata to ensure I'm opening the right version."
+# 3. Start the development server
+npm run dev
+# → http://localhost:5173
 
-* **AC 1:** Clicking a file "selects" it (distinct visual state based on your design).
-* **AC 2:** A "Properties Panel" displays the selected file's Name, Type, and Size.
+# 4. Production build
+npm run build
+npm run preview
+```
 
-#### Story 3: Keyboard Accessibility
-> "As a power user, I hate reaching for my mouse. I want to navigate the vault using only my keyboard."
+**Deploying to Vercel:**
+```bash
+npm install -g vercel
+vercel --prod
+```
 
-* **AC 1:** `Up/Down` arrows move focus between the visible items in the explorer.
-* **AC 2:** `Right` arrow expands a folder; `Left` arrow collapses it.
-* **AC 3:** `Enter` selects the file.
-
-### The "Wildcard" Feature (Required)
-
-#### Story 4: The Innovation Clause
-> "As a developer, I want to add one feature that the client didn't ask for, but would significantly improve the user experience."
-
-* **Task:** Identify a gap in the requirements. What is missing?
-* **AC 1:** Implement **one** additional feature of your choice.
-* **AC 2:** In your README, explain *why* you chose this feature and how it adds value to the business.
-
-### Bonus Feature (Optional)
-#### Story 5: Search & Filter
-* **AC 1:** A search bar filters the view. Matching items deep inside folders should force those folders to expand automatically.
 
 ---
 
-## 4. Technical Requirements
-* **Data:** Use the `data.json` file provided in this repo. Do not edit the JSON structure, but you may add more items to test performance.
-* **Tech Stack:** React, Vue, Svelte, or Vanilla JS.
-* **Documentation:** Your README in the submission must include:
-    1.  Setup instructions.
-    2.  Link to your Design File.
-    3.  Explanation of your **Recursive Strategy** (how you managed the data structure).
-    4.  Explanation of your **Wildcard Feature**.
+## Recursive Strategy
+
+### The Problem: Folders Inside Folders Inside Folders
+
+The data for this application lives in `data.json`. Open it and you will see that it is a tree, a folder can contain files, but it can also contain more folders, which can contain more folders, which can contain more folders, with no guaranteed limit on how deep it goes.
+
+This creates a real engineering problem. If you tried to write normal code to display this, you might write something like:
+
+"Loop through the top-level folders. For each one, loop through its children. For each of those, loop through their children..."
+
+ You do not know in advance how deep the nesting goes. A lawyer might have case files nested 3 levels deep. Another might have 8 levels. You cannot hardcode a fixed number of loops and call it done.
 
 ---
 
-## 5. Submission Instructions
-1.  **Fork** this repository.
-2.  Complete the code in your fork.
-3.  **Update the README:**
-    * **Delete** all the instructions in this file (the text you are reading now).
-    * **Replace** them with your own documentation as outlined in Section 4.
-    * *Note: Do not append your docs to the end. The final README should look like a professional project documentation, not a homework assignment.*
-4.  Submit your repo link via the [online](https://forms.office.com/e/G6vaRQxWYM) form.
+### The Solution: A Component That Renders Itself
+
+So recursion is a function that calls itself with different data each time, and stops when there is nothing left to process.
+
+The rule is simple:
+
+To display a folder: show the folder's name as a row, then apply the same rule to everything inside it.
+
+In code, `RenderTree` is the function that does this. Here is what happens when it runs:
+
+Am I a file?
+
+ Show my name as a row. I have no children. Stop.
+Am I a folder?
+
+ Show my name as a row.
+
+ Am I expanded (open)?
+
+ Yes: take each of my children and run RenderTree on them.
+
+(Each child will ask the same two questions above.)
+
+ No: stop here. Show nothing inside me.
+
+
+Here is a concrete example with real data from the app:
+RenderTree("Client Files")
+
+draws the "Client Files" row
+
+ it is a folder and it is open, so loop through its children:
+  RenderTree("Johnson vs. Meridian Corp")
+     draws the "Johnson vs. Meridian Corp" row
+     it is a folder and it is open, so loop through its children:
+
+        RenderTree("Depositions")
+           draws the "Depositions" row
+           it is a folder and it is open, so loop through its children:
+
+              RenderTree("Deposition_Harris_T.pdf")
+                draws the file row
+                 it is a file, no children → STOP
+
+              RenderTree("Deposition_Chen_L.pdf")
+                draws the file row
+                 it is a file, no children → STOP
+
+The critical insight is this: the component never needs to know how deep it is. It only ever looks one level ahead. its own children. The depth takes care of itself because each child runs the same logic on its own children.
+
+Adding a 10th level of nesting to the data requires zero changes to the code. The recursion handles it automatically.
 
 ---
-### ⚠️ CRITICAL: Pre-Submission Checklist
 
-**STOP and review your work.** To be eligible for the Solution Defense interview, your submission **MUST** pass the following "Gatekeeper" checks.
+### How Indentation Works
 
-If any of the following are incorrect, your submission will be flagged as incomplete and you will **NOT** be invited for an interview.
+Each time `RenderTree` calls itself on a child, it passes `depth + 1`. The `depth` number is used to calculate how far right that row should be pushed:
+paddingLeft = depth × 18px
 
-1.  **Public Repository:** Is your GitHub repository set to **Public**? (Private links will be auto-rejected).
-2.  **Audit-Ready History:** Does your Git commit history show your progress over time? (Repositories with a single "Initial Commit" or "Upload files" containing the entire project will be **rejected as unverifiable**).
-3.  **Working Deployment:** Have you tested your live link in an **Incognito/Private** window to ensure it loads without errors?
-4.  **No Restricted Libraries:** Did you build your own components? (Submissions using **Bootstrap, Material UI, or Chakra UI** will be disqualified).
-5.  **Design File Access:** Is your Figma/Penpot link included and set to **"Anyone with the link can view"**?
-6.  **Documentation:** Have you deleted the original assignment text from the `README.md` and replaced it with your own project documentation?
+So depth 0 (top-level folders) has no indent. Depth 1 has 18px. Depth 2 has 36px. And so on. This is what creates the visual tree effect — purely CSS, driven by a single number that increments with each recursive call.
 
-> **By submitting your work, you acknowledge that failure to meet these criteria effectively ends your application process.**
+---
+
+### Keyboard Navigation
+
+Keyboard navigation requires a flat ordered list of *currently visible* rows (because what's visible depends on which folders are expanded). This is computed by a `buildVisible` traversal that runs on every render and produces `flatListRef.current`. Arrow keys move an index pointer through this list. The pattern:
+
+```
+ArrowDown → focusIndex++
+ArrowUp   → focusIndex--
+ArrowRight → expandFolder(list[focusIndex].key)
+ArrowLeft  → collapseFolder(list[focusIndex].key)
+Enter      → select file | toggle folder
+```
+
+### Search
+
+Search is handled by `nodeMatchesSearch(node, query)` — a recursive function that returns `true` if the node's own name matches, or if *any descendant's* name matches. This means a folder only appears in search results if it or something inside it is relevant. Matching folders are auto-expanded so the matching file is immediately visible.
+
+---
+
+## Wildcard Feature: Breadcrumb Path Trail
+
+### What it is
+
+A persistent path bar beneath the explorer header showing the full vault path of the selected file — for example:
+
+```
+SecureVault / Client Files / Johnson vs. Meridian Corp / Depositions
+```
+
+### Why it was chosen
+
+The primary personas are lawyers and bankers navigating deeply nested archives. When you're five or six levels deep in a folder tree, it's easy to lose track of *where you are* — especially after using search to jump directly to a file.
+
+Without a breadcrumb, a user could accidentally save a new file in the wrong matter, or share a link to the wrong directory. For a law firm, that's a compliance risk. For a bank, it could be a regulatory issue.
+
+The breadcrumb solves this by providing a constant, glanceable location indicator a pattern users recognise from Finder, Windows Explorer, and every major cloud storage product. It costs zero additional interaction but permanently answers the question: *"where am I?"
+
+### Business value
+
+- **Error reduction:** Users confirm their location before acting, reducing misfiles.
+- **Navigation speed:** Future enhancement — clicking a breadcrumb ancestor will jump to that level.
+- **Audit readiness:** The full path is always visible, supporting screenshot-based audit trails.
+
