@@ -22,7 +22,7 @@ SecureVault's clients (law firms) manage deeply nested folder structures contain
 
 ### Prerequisites
 
-* Node.js 18+
+* Node.js 22+
 * npm
 
 ### Installation
