@@ -32,7 +32,7 @@ SecureVault's clients (law firms) manage deeply nested folder structures contain
 git clone https://github.com/your-username/securevault-dashboard.git
 
 # Navigate into project
-cd securevault-dashboard
+cd securevault
 
 # Install dependencies
 npm install
