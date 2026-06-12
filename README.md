@@ -2,8 +2,9 @@
 
 A high-performance, keyboard-accessible file explorer for SecureVault Inc. — built as a submission for the Junior Frontend Engineering challenge.
 
-**Live demo:** `https://your-deployment-url.vercel.app`  
-**Design file: https://scuba-floor-04356486.figma.site/ 
+**Live demo: https://securevault-dashboard.netlify.app/  
+
+**Design file figma:  https://www.figma.com/design/vN4RTd3lIhzkmtyRheyS4b/Design-System-secure-vault?node-id=0-1&t=7m4PhVGg69MXiSV5-1 
 
 ---
 
