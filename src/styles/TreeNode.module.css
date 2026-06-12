@@ -1,0 +1,74 @@
+/* TreeNode shares styles with FileTree.module.css */
+.item {
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text);
+  border-left: 2px solid transparent;
+  user-select: none;
+  transition: background 0.08s ease;
+  padding-right: 10px;
+}
+
+.row:hover {
+  background: var(--bg-hover);
+}
+
+.focused {
+  background: var(--bg-hover);
+  border-left-color: var(--color-accent2);
+}
+
+.selected {
+  background: var(--bg-selected);
+  border-left-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.chevronWrap {
+  width: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sizeBadge {
+  font-size: 10px;
+  color: var(--color-muted);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.highlight {
+  background: rgba(0, 198, 224, 0.2);
+  color: var(--color-accent);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.children {
+  list-style: none;
+}

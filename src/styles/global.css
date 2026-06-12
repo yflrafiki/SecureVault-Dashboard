@@ -1,0 +1,80 @@
+/* ─── Google Fonts ───────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-void:         #0A0E1A;
+  --bg-panel:        #0D1117;
+  --bg-surface:      #111827;
+  --bg-hover:        #1C2333;
+  --bg-selected:     #0E2A35;
+
+  /* Borders */
+  --border-default:  #1E293B;
+  --border-subtle:   #374151;
+
+  /* Accent palette */
+  --color-accent:    #00C6E0;
+  --color-accent2:   #7C3AED;
+
+  /* Text */
+  --color-text:      #E2E8F0;
+  --color-muted:     #64748B;
+
+  /* File type colours */
+  --color-folder:    #F59E0B;
+  --color-pdf:       #EF4444;
+  --color-doc:       #3B82F6;
+  --color-img:       #10B981;
+  --color-csv:       #8B5CF6;
+  --color-file-default: #64748B;
+
+  /* Typography */
+  --font-ui:   'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; height: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-subtle); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+/* ─── Focus ring ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Selection highlight ────────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 198, 224, 0.25);
+  color: var(--color-text);
+}
