@@ -47,7 +47,7 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      {/* ── Header ─────────────────────────────────────── */}
+      {/* Header */}
       <header className={styles.header}>
         <div className={styles.logo}>
           <ShieldIcon style={{ width: 18, height: 18 }} />
@@ -59,7 +59,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Main layout ────────────────────────────────── */}
+      {/*  Main layout */}
       <main className={styles.main}>
         {/* Left panel — file explorer */}
         <aside className={styles.explorer}>
@@ -100,7 +100,7 @@ export default function App() {
         </section>
       </main>
 
-      {/* ── Status bar ─────────────────────────────────── */}
+      {/* Status bar */}
       <footer className={styles.statusBar}>
         <div className={styles.statusItem}>
           <span className={styles.statusDot} />
@@ -110,8 +110,8 @@ export default function App() {
           {totalFiles} files secured
         </div>
         <div className={styles.statusItemRight}>
-          <kbd>↑↓</kbd> navigate &nbsp;
-          <kbd>→←</kbd> expand &nbsp;
+          <kbd>Up/Down</kbd> navigate &nbsp;
+          <kbd>Right/Left</kbd> expand &nbsp;
           <kbd>Enter</kbd> select
         </div>
       </footer>
