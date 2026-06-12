@@ -59,7 +59,7 @@ npm run preview
 
 ---
 
-# 3. Recursive Strategy
+# 2. Recursive Strategy
 
 ## The Problem
 
