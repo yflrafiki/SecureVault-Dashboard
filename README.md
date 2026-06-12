@@ -1,16 +1,15 @@
 # SecureVault File Explorer
 
-A high-performance, keyboard-accessible file explorer for SecureVault Inc. — built as a submission for the Junior Frontend Engineering challenge.
 
-**Live demo: https://securevault-dashboard.netlify.app/  
+Live demo: https://securevault-dashboard.netlify.app/  
 
-**Design file figma:  https://www.figma.com/design/vN4RTd3lIhzkmtyRheyS4b/Design-System-secure-vault?node-id=0-1&t=7m4PhVGg69MXiSV5-1 
+Design file figma:  https://www.figma.com/design/vN4RTd3lIhzkmtyRheyS4b/Design-System-secure-vault?node-id=0-1&t=7m4PhVGg69MXiSV5-1 
 
 ---
 
 ## Overview
 
-SecureVault's clients (law firms and banks) manage deeply nested folder structures with thousands of sensitive files. This application replaces a flat list with an interactive tree explorer featuring real-time search, keyboard navigation, file inspection, and a breadcrumb path trail.
+SecureVault's clients (law firms) manage deeply nested folder structures with thousands of sensitive files. This application replaces a flat list with an interactive tree explorer featuring real-time search, keyboard navigation, file inspection, and a breadcrumb path trail.
 
 ---
 
@@ -35,14 +34,7 @@ npm run build
 npm run preview
 ```
 
-**Deploying to Vercel:**
-```bash
-npm install -g vercel
-vercel --prod
-```
 
-
----
 
 ## Recursive Strategy
 
@@ -135,7 +127,7 @@ Enter      → select file | toggle folder
 
 ### Search
 
-Search is handled by `nodeMatchesSearch(node, query)` — a recursive function that returns `true` if the node's own name matches, or if *any descendant's* name matches. This means a folder only appears in search results if it or something inside it is relevant. Matching folders are auto-expanded so the matching file is immediately visible.
+Search is handled by `nodeMatchesSearch(node, query)`  a recursive function that returns `true` if the node's own name matches, or if any descendant's name matches. This means a folder only appears in search results if it or something inside it is relevant. Matching folders are auto-expanded so the matching file is immediately visible.
 
 ---
 
@@ -151,15 +143,9 @@ SecureVault / Client Files / Johnson vs. Meridian Corp / Depositions
 
 ### Why it was chosen
 
-The primary personas are lawyers and bankers navigating deeply nested archives. When you're five or six levels deep in a folder tree, it's easy to lose track of *where you are* — especially after using search to jump directly to a file.
+The primary personas are lawyers and bankers navigating deeply nested archives. When you're five or six levels deep in a folder tree, it's easy to lose track of where you are especially after using search to jump directly to a file.
 
 Without a breadcrumb, a user could accidentally save a new file in the wrong matter, or share a link to the wrong directory. For a law firm, that's a compliance risk. For a bank, it could be a regulatory issue.
 
-The breadcrumb solves this by providing a constant, glanceable location indicator a pattern users recognise from Finder, Windows Explorer, and every major cloud storage product. It costs zero additional interaction but permanently answers the question: *"where am I?"
-
-### Business value
-
-- **Error reduction:** Users confirm their location before acting, reducing misfiles.
-- **Navigation speed:** Future enhancement — clicking a breadcrumb ancestor will jump to that level.
-- **Audit readiness:** The full path is always visible, supporting screenshot-based audit trails.
+The breadcrumb solves this by providing a constant, glanceable location indicator a pattern users recognise from Finder, Windows Explorer, and every major cloud storage product. It costs zero additional interaction but permanently answers the question: "where am I?"
 
