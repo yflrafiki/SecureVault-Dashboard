@@ -24,7 +24,7 @@
                   "type": "folder",
                   "children": [
                     { "id": "email_1", "name": "Email_Thread_Jan2024.pdf", "type": "file", "ext": "pdf", "size": "4.2 MB" },
-                    { "id": "email_2", "name": "Leak_Evidence.png", "type": "file", "ext": "png", "size": "8.1 MB" }
+                    { "id": "email_2", "name": "Leak_Evidence.png", "type": "file", "ext": "png", "size": "8.1 MB", "modified": "2024-01-15" }
                   ]
                 },
                 { "id": "file_summ", "name": "Case_Summary_Draft_v3.docx", "type": "file", "ext": "docx", "size": "45 KB" }

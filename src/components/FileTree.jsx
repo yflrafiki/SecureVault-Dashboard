@@ -1,27 +1,12 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useRef } from 'react';
 import { nodeMatchesSearch } from '../hooks/useFileTree';
 import { FolderIcon, FileIcon, ChevronIcon } from './FileIcon';
 import styles from '../styles/FileTree.module.css';
 
-/**
- * FileTree
- *
- * Renders the vault tree and owns keyboard navigation.
- *
- * Keyboard strategy: we maintain a flat array of visible rows in rendering
- * order. The focused row is identified by flatIndex. Arrow keys move this
- * index; Enter/Right/Left manipulate the tree state.
- *
- * The flat list is rebuilt on every render because the tree shape can change
- * (expand/collapse, search filter). This is O(n) on visible items — fast
- * enough for any realistic vault size.
- */
-
+// Highlights the matching part of a name during search
 function HighlightMatch({ text, query }) {
   if (!query) return <>{text}</>;
-  const lower = text.toLowerCase();
-  const q = query.toLowerCase();
-  const idx = lower.indexOf(q);
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
   if (idx === -1) return <>{text}</>;
   return (
     <>
@@ -32,224 +17,84 @@ function HighlightMatch({ text, query }) {
   );
 }
 
-// Builds the visible flat list without rendering — used for keyboard nav
-function buildVisible(node, path, expandedKeys, searchQuery, results = []) {
-  if (!nodeMatchesSearch(node, searchQuery)) return results;
-  const nodePath = [...path, node.name];
-  const key = nodePath.join('/');
-  results.push({ node, path: nodePath, key });
-  const isFolder = node.type === 'folder';
-  const forceExpand =
-    searchQuery && isFolder
-      ? (node.children || []).some(c => nodeMatchesSearch(c, searchQuery))
-      : false;
-  const expanded = expandedKeys.has(key) || forceExpand;
-  if (isFolder && expanded) {
-    (node.children || []).forEach(child =>
-      buildVisible(child, nodePath, expandedKeys, searchQuery, results)
-    );
-  }
-  return results;
-}
-
-function Row({
-  node, path, depth, expanded, isSelected, isFocused,
-  searchQuery, onToggle, onSelect, onFocusRow, rowIndex,
-}) {
-  const ref = useRef(null);
+// Draws one single row — folder or file
+function Row({ node, path, depth, expanded, isSelected, isFocused, searchQuery, onToggle, onSelect, onFocusRow, rowIndex }) {
   const isFolder = node.type === 'folder';
   const key = path.join('/');
 
-  useEffect(() => {
-    if (isFocused && ref.current) {
-      ref.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }
-  }, [isFocused]);
-
-  const cls = [
-    styles.row,
-    isFocused && styles.focused,
-    isSelected && styles.selected,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div
-      ref={ref}
-      className={cls}
+      className={[styles.row, isFocused && styles.focused, isSelected && styles.selected].filter(Boolean).join(' ')}
       style={{ paddingLeft: `${depth * 18 + 10}px` }}
       role="treeitem"
       aria-expanded={isFolder ? expanded : undefined}
       aria-selected={isSelected}
       tabIndex={isFocused ? 0 : -1}
-      data-key={key}
-      onClick={e => {
-        e.stopPropagation();
-        onFocusRow(rowIndex);
-        if (isFolder) onToggle(key);
-        else onSelect(node, path);
-      }}
+      onClick={e => { e.stopPropagation(); onFocusRow(rowIndex); isFolder ? onToggle(key) : onSelect(node, path); }}
     >
-      <span className={styles.chevronWrap}>
-        {isFolder && <ChevronIcon open={expanded} />}
-      </span>
-      <span className={styles.iconWrap}>
-        {isFolder
-          ? <FolderIcon open={expanded} />
-          : <FileIcon ext={node.ext || ''} />}
-      </span>
-      <span className={styles.name}>
-        <HighlightMatch text={node.name} query={searchQuery} />
-      </span>
-      {!isFolder && node.size && (
-        <span className={styles.sizeBadge}>{node.size}</span>
-      )}
+      <span className={styles.chevronWrap}>{isFolder && <ChevronIcon open={expanded} />}</span>
+      <span className={styles.iconWrap}>{isFolder ? <FolderIcon open={expanded} /> : <FileIcon ext={node.ext || ''} />}</span>
+      <span className={styles.name}><HighlightMatch text={node.name} query={searchQuery} /></span>
+      {!isFolder && node.size && <span className={styles.sizeBadge}>{node.size}</span>}
     </div>
   );
 }
 
-// Recursively renders rows, passing the running flat-index counter via ref
-function RenderTree({
-  node, parentPath, depth,
-  expandedKeys, selectedFile, searchQuery,
-  focusIndex, flatListRef,
-  onToggle, onSelect, onFocusRow,
-}) {
+// Draws one row, then calls itself on the children if the folder is open
+function RenderTree({ node, parentPath, depth, expandedKeys, selectedFile, searchQuery, focusIndex, flatListRef, onToggle, onSelect, onFocusRow }) {
   if (!nodeMatchesSearch(node, searchQuery)) return null;
+
+  const isFolder = node.type === 'folder';
   const path = [...parentPath, node.name];
   const key = path.join('/');
-  const isFolder = node.type === 'folder';
-  const forceExpand =
-    searchQuery && isFolder
-      ? (node.children || []).some(c => nodeMatchesSearch(c, searchQuery))
-      : false;
-  const expanded = expandedKeys.has(key) || forceExpand;
-  const isSelected = selectedFile?.node === node;
-
-  // Register in flat list and get our index
+  const isOpen = expandedKeys.has(key) || (searchQuery && isFolder && (node.children || []).some(c => nodeMatchesSearch(c, searchQuery)));
   const myIndex = flatListRef.current.length;
   flatListRef.current.push({ node, path, key });
-  const isFocused = focusIndex === myIndex;
 
   return (
     <>
-      <Row
-        node={node}
-        path={path}
-        depth={depth}
-        expanded={expanded}
-        isSelected={isSelected}
-        isFocused={isFocused}
-        searchQuery={searchQuery}
-        onToggle={onToggle}
-        onSelect={onSelect}
-        onFocusRow={onFocusRow}
-        rowIndex={myIndex}
-      />
-      {isFolder && expanded &&
-        (node.children || [])
-          .filter(c => nodeMatchesSearch(c, searchQuery))
-          .map(child => (
-            <RenderTree
-              key={[...path, child.name].join('/')}
-              node={child}
-              parentPath={path}
-              depth={depth + 1}
-              expandedKeys={expandedKeys}
-              selectedFile={selectedFile}
-              searchQuery={searchQuery}
-              focusIndex={focusIndex}
-              flatListRef={flatListRef}
-              onToggle={onToggle}
-              onSelect={onSelect}
-              onFocusRow={onFocusRow}
-            />
-          ))}
+      <Row node={node} path={path} depth={depth} expanded={isOpen} isSelected={selectedFile?.node === node} isFocused={focusIndex === myIndex} searchQuery={searchQuery} onToggle={onToggle} onSelect={onSelect} onFocusRow={onFocusRow} rowIndex={myIndex} />
+      {isFolder && isOpen && (node.children || []).filter(c => nodeMatchesSearch(c, searchQuery)).map(child => (
+        <RenderTree key={child.name} node={child} parentPath={path} depth={depth + 1} expandedKeys={expandedKeys} selectedFile={selectedFile} searchQuery={searchQuery} focusIndex={focusIndex} flatListRef={flatListRef} onToggle={onToggle} onSelect={onSelect} onFocusRow={onFocusRow} />
+      ))}
     </>
   );
 }
 
-export default function FileTree({
-  rootData,
-  expandedKeys,
-  selectedFile,
-  searchQuery,
-  focusIndex,
-  setFocusIndex,
-  onToggle,
-  onSelect,
-}) {
-  // Reset flat list on every render
+// Main component — starts the tree and handles keyboard navigation
+export default function FileTree({ rootData, expandedKeys, selectedFile, searchQuery, focusIndex, setFocusIndex, onToggle, onSelect }) {
   const flatListRef = useRef([]);
   flatListRef.current = [];
 
-  const handleFocusRow = useCallback(idx => setFocusIndex(idx), [setFocusIndex]);
-
-  const handleKeyDown = useCallback(e => {
+  function handleKeyDown(e) {
     const list = flatListRef.current;
     if (!list.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setFocusIndex(i => Math.min(i + 1, list.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusIndex(i => Math.max(i - 1, 0)); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); const item = list[focusIndex]; if (item?.node.type === 'folder') onToggle(item.key, true); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); const item = list[focusIndex]; if (item?.node.type === 'folder') onToggle(item.key, false); }
+    else if (e.key === 'Enter') { e.preventDefault(); const item = list[focusIndex]; if (item) item.node.type === 'folder' ? onToggle(item.key) : onSelect(item.node, item.path); }
+  }
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setFocusIndex(i => Math.min(i + 1, list.length - 1));
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setFocusIndex(i => Math.max(i - 1, 0));
-        break;
-      case 'ArrowRight': {
-        e.preventDefault();
-        const item = list[focusIndex];
-        if (item?.node.type === 'folder') onToggle(item.key, true);
-        break;
-      }
-      case 'ArrowLeft': {
-        e.preventDefault();
-        const item = list[focusIndex];
-        if (item?.node.type === 'folder') onToggle(item.key, false);
-        break;
-      }
-      case 'Enter': {
-        e.preventDefault();
-        const item = list[focusIndex];
-        if (!item) break;
-        if (item.node.type === 'folder') onToggle(item.key);
-        else onSelect(item.node, item.path);
-        break;
-      }
-      default:
-        break;
-    }
-  }, [focusIndex, setFocusIndex, onToggle, onSelect]);
+  // Check if search has any results
+  const visibleItems = (rootData.children || []).filter(child => nodeMatchesSearch(child, searchQuery));
 
+  // If user searched but nothing was found, show a message
+  if (searchQuery && visibleItems.length === 0) {
+    return (
+      <div className={styles.noResults}>
+        <span>No results found for "</span>
+        <strong>{searchQuery}</strong>
+        <span>"</span>
+      </div>
+    );
+  }
+  
   return (
-    <div
-      className={styles.tree}
-      role="tree"
-      aria-label="Vault file tree"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-    >
-      {(rootData.children || [])
-        .filter(child => nodeMatchesSearch(child, searchQuery))
-        .map(child => (
-          <RenderTree
-            key={child.name}
-            node={child}
-            parentPath={[rootData.name]}
-            depth={0}
-            expandedKeys={expandedKeys}
-            selectedFile={selectedFile}
-            searchQuery={searchQuery}
-            focusIndex={focusIndex}
-            flatListRef={flatListRef}
-            onToggle={onToggle}
-            onSelect={onSelect}
-            onFocusRow={handleFocusRow}
-          />
-        ))}
+    <div className={styles.tree} role="tree" tabIndex={0} onKeyDown={handleKeyDown}>
+      {(rootData.children || []).filter(child => nodeMatchesSearch(child, searchQuery)).map(child => (
+        <RenderTree key={child.name} node={child} parentPath={[rootData.name]} depth={0} expandedKeys={expandedKeys} selectedFile={selectedFile} searchQuery={searchQuery} focusIndex={focusIndex} flatListRef={flatListRef} onToggle={onToggle} onSelect={onSelect} onFocusRow={idx => setFocusIndex(idx)} />
+      ))}
     </div>
   );
 }

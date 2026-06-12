@@ -70,6 +70,7 @@ export default function PropertiesPanel({ selectedFile }) {
         <PropCard label="File Type" value={typeLabel} accent />
         <PropCard label="Modified" value={node.modified} />
         <PropCard label="Created" value={node.created} />
+        {/* <PropCard label="Location" value={path.join(' / ')} /> */}
       </div>
 
       {/* Vault activity */}
