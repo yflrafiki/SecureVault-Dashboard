@@ -3,8 +3,8 @@ import { FolderIcon, FileIcon, ChevronIcon } from './FileIcon';
 import { nodeMatchesSearch } from '../hooks/useFileTree';
 import styles from '../styles/TreeNode.module.css';
 
-/**
- * Highlights the matching substring in a filename during search.
+/*
+  Highlights the matching substring in a filename during search.
  */
 function HighlightMatch({ text, query }) {
   if (!query) return <span>{text}</span>;

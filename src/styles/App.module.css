@@ -6,7 +6,7 @@
   color: var(--color-text);
 }
 
-/* ── Header ─────────────────────────────────────────────── */
+/*  Header */
 .header {
   display: flex;
   align-items: center;
@@ -42,14 +42,14 @@
   margin-left: auto;
 }
 
-/* ── Main layout ─────────────────────────────────────────── */
+/* Main layout  */
 .main {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* ── Left panel ──────────────────────────────────────────── */
+/* Left panel  */
 .explorer {
   width: 320px;
   flex-shrink: 0;
@@ -60,7 +60,7 @@
   overflow: hidden;
 }
 
-/* ── Shared pane header ──────────────────────────────────── */
+/* Shared pane header  */
 .paneHeader {
   display: flex;
   align-items: center;
@@ -76,7 +76,7 @@
   flex-shrink: 0;
 }
 
-/* ── Right panel ─────────────────────────────────────────── */
+/* Right panel */
 .properties {
   flex: 1;
   background: var(--bg-void);
@@ -91,7 +91,7 @@
   padding: 24px;
 }
 
-/* ── Status bar ──────────────────────────────────────────── */
+/* Status bar */
 .statusBar {
   display: flex;
   align-items: center;

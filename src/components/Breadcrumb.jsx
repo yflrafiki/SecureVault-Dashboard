@@ -1,15 +1,6 @@
 import React from 'react';
 import styles from '../styles/Breadcrumb.module.css';
 
-/**
- * Breadcrumb — Wildcard Feature
- *
- * Renders the full vault path of the selected file, e.g.
- *   SecureVault / Client Files / Johnson vs. Meridian Corp / Depositions / Deposition_Harris_T.pdf
- *
- * Each segment is interactive: clicking a folder ancestor collapses focus
- * back to that level (future enhancement hook exposed via onSegmentClick).
- */
 export default function Breadcrumb({ path = [], onSegmentClick }) {
   if (!path.length) {
     return (
